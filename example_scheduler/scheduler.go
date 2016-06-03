@@ -4,14 +4,12 @@ import (
 	log "github.com/Sirupsen/logrus"
 	"github.com/golang/protobuf/proto"
 	"github.com/mesos/mesos-go/mesosproto"
-	"github.com/mesos/mesos-go/mesosutil"
 	"github.com/mesos/mesos-go/scheduler"
-	"github.com/satori/go.uuid"
 )
 
 type ExampleScheduler struct {
 	ExecutorInfo *mesosproto.ExecutorInfo
-	wsCh chan mesosproto.Offer
+	WsCh         chan mesosproto.Offer
 }
 
 //StatusUpdate is called by a running task to provide status information to the
@@ -25,7 +23,7 @@ func (s *ExampleScheduler) StatusUpdate(driver scheduler.SchedulerDriver, status
 //and to accept or reject them if they don't fit the needs of the framework
 func (s *ExampleScheduler) ResourceOffers(driver scheduler.SchedulerDriver, offers []*mesosproto.Offer) {
 	for _, offer := range offers {
-		s.wsCh <- *offer
+		s.WsCh <- *offer
 		driver.DeclineOffer(offer.Id, &mesosproto.Filters{RefuseSeconds: proto.Float64(1)})
 	}
 }

@@ -22,7 +22,9 @@ func TestNew(t *testing.T) {
 
 	q := make(chan bool)
 	port := ":8080"
-	go New(&port, q)
+	OfferCh := make(chan mesosproto.Offer)
+
+	go New(port, q, OfferCh)
 
 	origin := fmt.Sprintf("http://localhost%s/", port)
 	url := fmt.Sprintf("ws://localhost%s/ws", port)
@@ -49,12 +51,18 @@ func TestNew(t *testing.T) {
 }
 
 func TestServer(t *testing.T){
-	defaultOffer := mesosproto.Offer{}
+	s := "Asdfadsf"
+
+	defaultOffer := mesosproto.Offer{
+		Hostname: &s,
+	}
 
 	q := make(chan bool)
 	port := ":8080"
 
-	go New(&port, q)
+	OfferCh := make(chan mesosproto.Offer)
+
+	go New(port, q, OfferCh)
 
 	for i := 0; i<5; i++ {
 		time.Sleep(3 * time.Second)
@@ -64,5 +72,5 @@ func TestServer(t *testing.T){
 		}()
 	}
 
-	time.Sleep(30 * time.Second)
+	time.Sleep(50000 * time.Second)
 }

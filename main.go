@@ -7,15 +7,17 @@ import (
 	"github.com/mesos/mesos-go/mesosproto"
 	"github.com/mesos/mesos-go/mesosutil"
 	"github.com/mesos/mesos-go/scheduler"
-	"github.com/sayden/minimal-mesos-go-framework/example_scheduler"
+	"github.com/thehivecorporation/minimal-mesos-go-framework/example_scheduler"
 
 	"os"
 
 	log "github.com/Sirupsen/logrus"
+	"github.com/thehivecorporation/minimal-mesos-go-framework/server"
 )
 
 var (
 	master = flag.String("master", "127.0.0.1:5050", "Master address <ip:port>")
+	port   = flag.String("port", "9093", "Server port")
 )
 
 func init() {
@@ -42,17 +44,25 @@ func main() {
 		},
 	}
 
+	//Channel that will receive offers
+	offerCh := make(chan mesosproto.Offer)
+
+	//Channel to provoque a shutdown
+	q := make(chan bool)
+
+	//Web server
+	go server.New(":"+*port, q, offerCh)
+
 	//Scheduler
 	my_scheduler := &example_scheduler.ExampleScheduler{
 		ExecutorInfo: executorInfo,
-		NeededCpu:    0.5,
-		NeededRam:    128.0,
+		WsCh:         offerCh,
 	}
 
 	//Framework
 	frameworkInfo := &mesosproto.FrameworkInfo{
 		User: proto.String("root"), // Mesos-go will fill in user.
-		Name: proto.String("Stratio Server Framework (Go)"),
+		Name: proto.String("Log Offers Scheduler (Go)"),
 	}
 
 	//Scheduler Driver
