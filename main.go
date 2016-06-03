@@ -13,6 +13,7 @@ import (
 
 	log "github.com/Sirupsen/logrus"
 	"github.com/thehivecorporation/minimal-mesos-go-framework/server"
+	"fmt"
 )
 
 var (
@@ -25,23 +26,10 @@ func init() {
 }
 
 func main() {
-	//ExecutorInfo
-	executorUri := "http://s3-eu-west-1.amazonaws.com/enablers/executor"
-	executorUris := []*mesosproto.CommandInfo_URI{
-		{
-			Value:      &executorUri,
-			Executable: proto.Bool(true),
-		},
-	}
-
 	executorInfo := &mesosproto.ExecutorInfo{
 		ExecutorId: mesosutil.NewExecutorID("default"),
-		Name:       proto.String("Test Executor (Go)"),
-		Source:     proto.String("go_test"),
-		Command: &mesosproto.CommandInfo{
-			Value: proto.String("./executor"),
-			Uris:  executorUris,
-		},
+		Name:       proto.String("Real Time Offer Viewer"),
+		Source:     proto.String("real_time_offers_"),
 	}
 
 	//Channel that will receive offers
@@ -51,10 +39,10 @@ func main() {
 	q := make(chan bool)
 
 	//Web server
-	go server.New(":"+*port, q, offerCh)
+	go server.New(fmt.Sprintf(":%s",*port), q, offerCh)
 
 	//Scheduler
-	my_scheduler := &example_scheduler.ExampleScheduler{
+	my_scheduler := &example_scheduler.LogScheduler{
 		ExecutorInfo: executorInfo,
 		WsCh:         offerCh,
 	}
@@ -62,7 +50,7 @@ func main() {
 	//Framework
 	frameworkInfo := &mesosproto.FrameworkInfo{
 		User: proto.String("root"), // Mesos-go will fill in user.
-		Name: proto.String("Log Offers Scheduler (Go)"),
+		Name: proto.String("Log Offers Scheduler"),
 	}
 
 	//Scheduler Driver

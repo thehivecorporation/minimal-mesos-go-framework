@@ -5,24 +5,33 @@ import (
 
 	log "github.com/Sirupsen/logrus"
 	"github.com/gorilla/mux"
-	"github.com/gorilla/websocket"
+	gorWs "github.com/gorilla/websocket"
 	"github.com/mesos/mesos-go/mesosproto"
 )
 
-var wsUpgrader = websocket.Upgrader{
+var wsUpgrader = gorWs.Upgrader{
 	ReadBufferSize:  1024,
 	WriteBufferSize: 1024,
 }
+
+var addListenerCh chan chan mesosproto.Offer
+var removeListenerCh chan chan mesosproto.Offer
+var OfferCh chan mesosproto.Offer //TODO Candidate for singleton
 
 func New(p string, q chan bool, oCh chan mesosproto.Offer) {
 	go LaunchDispatcher(oCh)
 
 	r := mux.NewRouter()
 
-	r.PathPrefix("/").Handler(http.FileServer(http.Dir("./public/")))
 	r.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
 		WebSocketHandler(w, r, q)
 	})
+
+	r.HandleFunc("/hello", func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte("string"))
+	})
+
+	r.PathPrefix("/").Handler(http.FileServer(http.Dir("./server/public/")))
 
 	http.Handle("/", r)
 	log.Infof("Launching server on %s", p)
@@ -54,10 +63,6 @@ func WebSocketHandler(w http.ResponseWriter, r *http.Request, q chan bool) {
 		}
 	}
 }
-
-var addListenerCh chan chan mesosproto.Offer
-var removeListenerCh chan chan mesosproto.Offer
-var OfferCh chan mesosproto.Offer
 
 func LaunchDispatcher(oCh chan mesosproto.Offer) {
 	log.Info("Launching Dispatcher")
