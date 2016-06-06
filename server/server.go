@@ -75,7 +75,6 @@ func LaunchDispatcher(oCh chan mesosproto.Offer) {
 	for {
 		select {
 		case offer := <-OfferCh:
-			//log.Info("Offer received in dispatcher")
 			for _, listener := range listeners {
 				listener <- offer
 			}

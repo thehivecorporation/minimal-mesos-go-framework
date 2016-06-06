@@ -55,3 +55,5 @@ minimal-mesos-framework
 example_executor/executor
 
 minimal-mesos-framework.iml
+
+node_modules
