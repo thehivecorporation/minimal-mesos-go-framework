@@ -49,28 +49,3 @@ func TestNew(t *testing.T) {
 	q <- true
 	time.Sleep(1 * time.Second)
 }
-
-func TestServer(t *testing.T){
-	s := "Asdfadsf"
-
-	defaultOffer := mesosproto.Offer{
-		Hostname: &s,
-	}
-
-	q := make(chan bool)
-	port := ":8080"
-
-	OfferCh := make(chan mesosproto.Offer)
-
-	go New(port, q, OfferCh)
-
-	for i := 0; i<5; i++ {
-		time.Sleep(3 * time.Second)
-		go func(){
-			fmt.Println("Sending object to dispatcher")
-			OfferCh <- defaultOffer
-		}()
-	}
-
-	time.Sleep(50000 * time.Second)
-}

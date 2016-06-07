@@ -22,12 +22,12 @@ class App extends React.Component {
         <div>
           <AppBar
             title="Apache Mesos Real Time Offer Visualizer"
-            iconElementLeft={<Avatar src="img/swarm.png"></Avatar>}
+            iconElementLeft={<Avatar src="public/img/swarm.png"></Avatar>}
             iconElementRight={
               <IconButton tooltip="GitHub" style={{padding:"0px"}} onFocus={function(e){
                   window.open("http://github.com/sayden/docker-commander");
                 }}>
-                <Avatar src="img/github.png"/>
+                <Avatar src="public/img/github.png"/>
               </IconButton>
               }
           />

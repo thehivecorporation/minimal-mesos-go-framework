@@ -3,6 +3,10 @@ package server
 import (
 	"net/http"
 
+	"html/template"
+
+	"os"
+
 	log "github.com/Sirupsen/logrus"
 	"github.com/gorilla/mux"
 	gorWs "github.com/gorilla/websocket"
@@ -31,11 +35,39 @@ func New(p string, q chan bool, oCh chan mesosproto.Offer) {
 		w.Write([]byte("string"))
 	})
 
-	r.PathPrefix("/").Handler(http.FileServer(http.Dir("./server/public/")))
+	r.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		serveStatic(p, w, r)
+	})
 
-	http.Handle("/", r)
+	staticHandler := http.FileServer(http.Dir("server/public/"))
+	staticHandler = http.StripPrefix("/public/", staticHandler)
+	r.PathPrefix("/public/").Handler(staticHandler)
+
 	log.Infof("Launching server on %s", p)
-	log.Fatal(http.ListenAndServe(p, nil))
+	log.Fatal(http.ListenAndServe(p, r))
+}
+
+func serveStatic(p string, w http.ResponseWriter, r *http.Request) {
+	dir, err := os.Getwd()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	tmpl, err := template.ParseFiles(dir + "/server/templates/index.html")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	templateData := struct {
+		Port string
+	}{
+		Port: p,
+	}
+
+	err = tmpl.Execute(w, templateData)
+	if err != nil {
+		log.Fatal("Could not launch web server")
+	}
 }
 
 func WebSocketHandler(w http.ResponseWriter, r *http.Request, q chan bool) {
