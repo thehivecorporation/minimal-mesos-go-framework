@@ -8,9 +8,11 @@
   <body>
     <div id="container"></div>
 
-    <script src="js/bundle.js"></script>
     <script type="text/javascript">
-
+      //Define a global variable "socketPort" to provide front with the port
+      //where the server is launched
+      var socketPort = {{.Port}};
     </script>
+    <script src="/public/js/bundle.js"></script>
   </body>
 </html>
