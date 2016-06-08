@@ -31,7 +31,7 @@ class OfferList extends React.Component {
     return(
         <Card style={this.props.style}>
           <CardHeader title="Offers" subtitle="Max offers 20"
-            avatar={<Avatar src="public/img/container.jpg"></Avatar>}
+            avatar={<Avatar src="public/img/money-bag.png"></Avatar>}
             />
 
             <Table fixedHeader={true} fixedFooter={true} selectable={false}>
@@ -48,7 +48,7 @@ class OfferList extends React.Component {
                   <TableHeaderColumn>Resources: Ports</TableHeaderColumn>
                 </TableRow>
               </TableHeader>
-              <TableBody displayRowCheckbox={false} showRowHover={true} >
+              <TableBody preScanRows={false} stripedRows={true} displayRowCheckbox={false} showRowHover={true} >
 
                 {offerList}
 

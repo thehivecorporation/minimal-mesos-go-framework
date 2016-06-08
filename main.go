@@ -7,12 +7,12 @@ import (
 	"github.com/mesos/mesos-go/mesosproto"
 	"github.com/mesos/mesos-go/mesosutil"
 	"github.com/mesos/mesos-go/scheduler"
-	"github.com/thehivecorporation/minimal-mesos-go-framework/example_scheduler"
+	"github.com/thehivecorporation/real-time-mesos-offers/example_scheduler"
 
 	"os"
 
 	log "github.com/Sirupsen/logrus"
-	"github.com/thehivecorporation/minimal-mesos-go-framework/server"
+	"github.com/thehivecorporation/real-time-mesos-offers/server"
 	"fmt"
 )
 

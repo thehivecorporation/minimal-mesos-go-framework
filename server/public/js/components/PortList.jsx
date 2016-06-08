@@ -7,15 +7,15 @@ class PortList extends React.Component {
     render(){
       let id = this.props.containerId;
 
-      let ports = this.props.ranges.map(r => {
-        return <Port key={this.props.offerId + "_" + r.begin + "_" + r.end} 
-        				  begin={r.begin}
-        				  end={r.end} />
-      });
-
       return(
         <List style={{backgroundColor:'#00000000'}} >
-          {ports}
+          {
+            this.props.ranges.map(r => {
+              return <Port key={this.props.offerId + "_" + r.begin + "_" + r.end} 
+                        begin={r.begin}
+                        end={r.end} />
+              })
+        }
         </List>
       )
     }
