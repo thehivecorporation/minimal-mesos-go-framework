@@ -57,3 +57,5 @@ example_executor/executor
 minimal-mesos-framework.iml
 
 node_modules
+
+server/public/js/bundle.js
