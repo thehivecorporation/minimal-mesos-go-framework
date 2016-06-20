@@ -2,7 +2,7 @@ import store from './store.jsx'
 import { newOffer } from './actions.jsx';
 
 //TODO Port must be defined from server so a template is required probably.
-const url = 'ws://127.0.0.1' + socketPort + '/ws';
+const url = 'ws://' + host + socketPort + '/ws';
 let socket = new WebSocket(url);
 
 socket.onclose = () => { console.log("Socket closed..."); };

@@ -22,7 +22,7 @@ var addListenerCh chan chan mesosproto.Offer
 var removeListenerCh chan chan mesosproto.Offer
 var OfferCh chan mesosproto.Offer //TODO Candidate for singleton
 
-func New(p string, q chan bool, oCh chan mesosproto.Offer) {
+func New(p string, h string, q chan bool, oCh chan mesosproto.Offer) {
 	go LaunchDispatcher(oCh)
 
 	r := mux.NewRouter()
@@ -36,7 +36,7 @@ func New(p string, q chan bool, oCh chan mesosproto.Offer) {
 	})
 
 	r.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		serveStatic(p, w, r)
+		serveStatic(p, h, w, r)
 	})
 
 	staticHandler := http.FileServer(http.Dir("server/public/"))
@@ -47,7 +47,7 @@ func New(p string, q chan bool, oCh chan mesosproto.Offer) {
 	log.Fatal(http.ListenAndServe(p, r))
 }
 
-func serveStatic(p string, w http.ResponseWriter, r *http.Request) {
+func serveStatic(p string, h string, w http.ResponseWriter, r *http.Request) {
 	dir, err := os.Getwd()
 	if err != nil {
 		log.Fatal(err)
@@ -60,8 +60,10 @@ func serveStatic(p string, w http.ResponseWriter, r *http.Request) {
 
 	templateData := struct {
 		Port string
+		Host string
 	}{
 		Port: p,
+		Host: h,
 	}
 
 	err = tmpl.Execute(w, templateData)
@@ -127,56 +129,3 @@ func LaunchDispatcher(oCh chan mesosproto.Offer) {
 		}
 	}
 }
-
-//
-//func home(w http.ResponseWriter, r *http.Request) {
-//
-//	homeTemplate.Execute(w, "ws://"+r.Host+"/ws")
-//}
-
-//var homeTemplate = template.Must(template.New("").Parse(`
-//<!DOCTYPE html>
-//  <head>
-//  <meta charset="utf-8">
-//    <script>
-//    window.addEventListener("load", function(evt) {
-//        var output = document.getElementById("output");
-//        var input = document.getElementById("input");
-//        var ws;
-//        var print = function(message) {
-//            var d = document.createElement("div");
-//            d.innerHTML = message;
-//            output.appendChild(d);
-//        };
-//            if (ws) {
-//                return false;
-//            }
-//            ws = new WebSocket("{{.}}");
-//            ws.onopen = function(evt) {
-//                print("OPEN");
-//            }
-//            ws.onclose = function(evt) {
-//                print("CLOSE");
-//                ws = null;
-//            }
-//            ws.onmessage = function(evt) {
-//                print("RESPONSE: " + evt.data);
-//            }
-//            ws.onerror = function(evt) {
-//                print("ERROR: " + evt.data);
-//            }
-//        document.getElementById("close").onclick = function(evt) {
-//            if (!ws) {
-//                return false;
-//            }
-//            ws.close();
-//            return false;
-//        };
-//    });
-//    </script>
-//  </head>
-//  <body>
-//    <div id="output"></div>
-//  </body>
-//</html>
-//`))

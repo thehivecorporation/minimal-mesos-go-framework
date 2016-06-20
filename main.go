@@ -42,7 +42,7 @@ func main() {
 	q := make(chan bool)
 
 	//Web server
-	go server.New(fmt.Sprintf(":%s", *port), q, offerCh)
+	go server.New(fmt.Sprintf(":%s", *port), *hostname, q, offerCh)
 
 	//Scheduler
 	my_scheduler := &example_scheduler.LogScheduler{
