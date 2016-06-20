@@ -10,5 +10,6 @@ RUN git clone https://github.com/thehivecorporation/real-time-mesos-offers.git .
 RUN go get ./...
 RUN go build -o app
 RUN npm install
+RUN node_modules/browserify/bin/cmd.js -t [ babelify --presets [ es2015 react ] ] server/public/js/main.jsx -o server/public/js/bundle.js
 
 CMD ./app --master=zk://10.200.0.152:2181/mesos --port 9095 --hostname 0.0.0.0
