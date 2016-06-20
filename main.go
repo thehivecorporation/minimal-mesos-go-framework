@@ -11,14 +11,17 @@ import (
 
 	"os"
 
+	"fmt"
+
 	log "github.com/Sirupsen/logrus"
 	"github.com/thehivecorporation/real-time-mesos-offers/server"
-	"fmt"
+	"net"
 )
 
 var (
-	master = flag.String("master", "127.0.0.1:5050", "Master address <ip:port>")
-	port   = flag.String("port", "9093", "Server port")
+	master   = flag.String("master", "127.0.0.1:5050", "Master address <ip:port>")
+	port     = flag.String("port", "9093", "Server port")
+	hostname = flag.String("hostname", "172.19.0.1", "IP of the hostname that the scheduler will communicate with")
 )
 
 func init() {
@@ -39,7 +42,7 @@ func main() {
 	q := make(chan bool)
 
 	//Web server
-	go server.New(fmt.Sprintf(":%s",*port), q, offerCh)
+	go server.New(fmt.Sprintf(":%s", *port), q, offerCh)
 
 	//Scheduler
 	my_scheduler := &example_scheduler.LogScheduler{
@@ -48,17 +51,23 @@ func main() {
 	}
 
 	//Framework
+	webui := *hostname + ":" + *port
 	frameworkInfo := &mesosproto.FrameworkInfo{
-		User: proto.String("root"), // Mesos-go will fill in user.
-		Name: proto.String("Log Offers Scheduler"),
+		User:     proto.String("root"), // Mesos-go will fill in user.
+		Name:     proto.String("Log Offers Scheduler"),
+		Hostname: hostname,
+		WebuiUrl: &webui,
 	}
 
 	//Scheduler Driver
+	hostIP := net.ParseIP(*hostname)
 	config := scheduler.DriverConfig{
-		Scheduler:  my_scheduler,
-		Framework:  frameworkInfo,
-		Master:     *master,
-		Credential: (*mesosproto.Credential)(nil),
+		Scheduler:        my_scheduler,
+		Framework:        frameworkInfo,
+		Master:           *master,
+		Credential:       (*mesosproto.Credential)(nil),
+		BindingAddress:   hostIP,
+		PublishedAddress: hostIP,
 	}
 
 	driver, err := scheduler.NewMesosSchedulerDriver(config)
