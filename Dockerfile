@@ -1,6 +1,6 @@
 FROM jamesgroat/golang-nodejs
 
-MAINTAINER mariocaster@gmail.com
+MAINTAINER mcastro@stratio.com
 
 # Go to working directory
 WORKDIR /go/src/app
