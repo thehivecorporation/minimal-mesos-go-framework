@@ -28,14 +28,12 @@ func New(p string, h string, q chan bool, oCh chan mesosproto.Offer) {
 	r := mux.NewRouter()
 
 	r.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Access-Control-Allow-Origin", "*")
 		WebSocketHandler(w, r, q)
 	})
 
-	r.HandleFunc("/hello", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("string"))
-	})
-
 	r.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Access-Control-Allow-Origin", "*")
 		serveStatic(p, h, w, r)
 	})
 
